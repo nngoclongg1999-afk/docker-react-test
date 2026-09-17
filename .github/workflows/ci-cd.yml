@@ -62,6 +62,11 @@ jobs:
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v22
         with:
+          # Lấy Credentials tạm thời từ bước OIDC trước đó:
+          aws_access_key: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws_session_token: ${{ env.AWS_SESSION_TOKEN }} # BẮT BUỘC có dòng này khi dùng OIDC / Assume Role
+          
           application_name: "frontend"
           environment_name: "Frontend-env"
           version_label: "build-${{ github.sha }}"
