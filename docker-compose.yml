@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  web:
+    # Cách 1: Build trực tiếp từ Dockerfile production trong dự án
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    restart: always
+    # Cách 2: Hoặc dùng Image đã push sẵn lên ECR / DockerHub
+    # image: your-dockerhub-username/your-app-repo:latest

@@ -1,34 +1,36 @@
-name: CI/CD Frontend
+name: Deploy to AWS Elastic Beanstalk
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
-  test:
+  deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build test image
-        run: docker build -t react-test -f Dockerfile.dev .
-      - name: Run tests
-        run: docker run -e CI=true react-test npm test
 
-  build-and-push:
-    needs: test
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Build & push production image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/frontend:${{ github.sha }}
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::842168250803:role/GitHubActions-Beanstalk-Role # [2] ARN của IAM Role
+          aws-region: ap-southeast-1 # [3] Region của AWS
+
+      - name: Generate Deployment Package
+        run: zip -r deploy.zip . -x '*.git*'
+
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          application_name: "frontend" # [4] Tên Application trên Beanstalk
+          environment_name: "Frontend-env" # [5] Tên Environment trên Beanstalk
+          version_label: "app-build-${{ github.sha }}"
+          region: "ap-southeast-1" # [6] Region của AWS (trùng với aws-region ở trên)
+          deployment_package: "deploy.zip"
