@@ -15,7 +15,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          18 Sep 2026 v1
+          19 Sep 2026 v1
         </a>
       </header>
     </div>
