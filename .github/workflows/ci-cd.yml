@@ -36,13 +36,12 @@ jobs:
       - name: Prepare Deployment Artifacts
         run: |
           mkdir deploy-package
-          # Copy thư mục build tĩnh
+          # Copy thư mục build tĩnh vừa tạo
           cp -r build deploy-package/
-          # Copy file package.json (BẮT BUỘC cho Dockerfile)
-          cp package.json deploy-package/
-          # Copy Dockerfile và docker-compose.yml
+          # Copy Dockerfile mới và docker-compose.yml
           cp Dockerfile deploy-package/
           cp docker-compose.yml deploy-package/
+          
           cd deploy-package
           zip -r ../deploy.zip .
 

@@ -1,22 +1,15 @@
-FROM node:lts-alpine as builder
-WORKDIR '/app'
-COPY package.json .
-RUN npm install
-COPY . .
-RUN npm run build
-
 FROM nginx:alpine
 
 # Xóa các file log mặc định hoặc liên kết cũ
-RUN rm -f /var/log/nginx/access.log /var/log/nginx/error.log
+RUN rm -f /var/log/nginx/access.log /var/log/nginx/error.log[cite: 2]
 
-# Định hướng lại log về /dev/null
+# Định hướng lại log về /dev/null[cite: 2]
 RUN ln -sf /dev/null /var/log/nginx/access.log \
-    && ln -sf /dev/null /var/log/nginx/error.log
+    && ln -sf /dev/null /var/log/nginx/error.log[cite: 2]
 
-# Copy code tĩnh đã build vào thư mục của Nginx
-COPY --from=builder /app/build /usr/share/nginx/html
+# Copy trực tiếp thư mục build tĩnh đã được tạo ra từ GitHub Actions
+COPY build /usr/share/nginx/html
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off;"][cite: 2]
